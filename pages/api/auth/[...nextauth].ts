@@ -1,9 +1,9 @@
-import NextAuth, { NextAuthOptions } from "next-auth"
-import GoogleProvider from "next-auth/providers/google"
-import FacebookProvider from "next-auth/providers/facebook"
-import GithubProvider from "next-auth/providers/github"
-import TwitterProvider from "next-auth/providers/twitter"
-import Auth0Provider from "next-auth/providers/auth0"
+import NextAuth, { NextAuthOptions } from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
+import FacebookProvider from "next-auth/providers/facebook";
+import GithubProvider from "next-auth/providers/github";
+import TwitterProvider from "next-auth/providers/twitter";
+import Auth0Provider from "next-auth/providers/auth0";
 // import AppleProvider from "next-auth/providers/apple"
 // import EmailProvider from "next-auth/providers/email"
 
@@ -50,16 +50,35 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.AUTH0_SECRET,
       issuer: process.env.AUTH0_ISSUER,
     }),
+    {
+      id: "ory",
+      name: "Ory Network",
+      type: "oauth",
+      authorization: { params: { scope: "email profile" } },
+      clientId: process.env.ORY_ID,
+      clientSecret: process.env.ORY_SECRET,
+      issuer: process.env.ORY_ISSUER,
+      authorization: process.env.ORY_ISSUER + "/oauth2/auth",
+      token: process.env.ORY_ISSUER + "/oauth2/token",
+      userinfo: process.env.ORY_ISSUER + "/userinfo",
+      idToken: true,
+      profile(profile) {
+        return {
+          id: profile.id,
+          email: profile?.email,
+        };
+      },
+    },
   ],
   theme: {
     colorScheme: "light",
   },
   callbacks: {
     async jwt({ token }) {
-      token.userRole = "admin"
-      return token
+      token.userRole = "admin";
+      return token;
     },
   },
-}
+};
 
-export default NextAuth(authOptions)
+export default NextAuth(authOptions);
